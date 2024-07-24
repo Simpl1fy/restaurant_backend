@@ -1,9 +1,12 @@
 const db = require('./db.js');
 const express = require('express')
 const app = express()
+require("dotenv").config();
 
 const bodyParser = require('body-parser');
-app.use(bodyParser.json());     // data is stored in req.body
+app.use(bodyParser.json());    // data is stored in req.body
+
+const PORT = process.env.PORT || 3000;
 
 const Employee = require('./Models/employee.js');
 const Menu = require('./Models/menu.js');
@@ -23,6 +26,6 @@ app.use('/employee', employeeRoutes);
 const menuRoutes = require('./routes/menuRoutes.js');
 app.use('/menu', menuRoutes);
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
     console.log("Listening to port 3000, and server is online");
 })
