@@ -13,19 +13,27 @@ const Menu = require('./Models/menu.js');
 
 // api
 
+// Creating a middleware to log request
+const logRequest = (req, res, next) => {
+	console.log(`[${new Date().toLocaleString()}] Request hit in: ${req.originalUrl}`);
+	next();
+}
+
+// using middleware
+app.use(logRequest);
+
 app.get('/', function (req, res) {
-  res.send('Welcome to our restaurant, how may I help you?');
+	res.send('Welcome to our restaurant, how may I help you?');
 })
 
 // importing the employee routes
 const employeeRoutes = require('./routes/employeeRoutes');
-
-// using the employee routes
 app.use('/employee', employeeRoutes);
 
+// importing the menu routes
 const menuRoutes = require('./routes/menuRoutes.js');
 app.use('/menu', menuRoutes);
 
 app.listen(PORT, () => {
-    console.log("Listening to port 3000, and server is online");
+	console.log("Listening to port 3000, and server is online");
 })
