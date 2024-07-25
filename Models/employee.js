@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const employeeSchema = new mongoose.Schema({
     name: {
@@ -32,13 +33,38 @@ const employeeSchema = new mongoose.Schema({
     username: {
         required: true,
         type: String,
-        unique: true
     },
     password: {
         required: true,
         type: String
     }
 })
+
+employeeSchema.pre('save', async function (next) {
+    const emp = this;
+
+    if (!emp.isModified('password')) return next();
+    try {
+        // generating salt
+        const salt = await bcrypt.genSalt(10);
+
+        // generate hash password
+        const hashPass = await bcrypt.hash(emp.password, salt);
+        emp.password = hashPass;
+        next();
+    } catch (err) {
+        return next(err);
+    }
+})
+
+employeeSchema.methods.comparePassword = async function(givenPassword) {
+    try {
+        const isMatch = await bcrypt.compare(givenPassword, this.password);
+        return isMatch;
+    } catch(err) {
+        throw err;
+    }
+} 
 
 const Employee = mongoose.model('Employee', employeeSchema);
 
