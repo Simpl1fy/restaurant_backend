@@ -33,7 +33,7 @@ app.get('/', function (req, res) {
 
 // importing the employee routes
 const employeeRoutes = require('./routes/employeeRoutes');
-app.use('/employee', localAppAuthentication, employeeRoutes);
+app.use('/employee', employeeRoutes);
 
 // importing the menu routes
 const menuRoutes = require('./routes/menuRoutes.js');

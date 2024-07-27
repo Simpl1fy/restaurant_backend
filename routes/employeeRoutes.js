@@ -1,15 +1,31 @@
 const express = require('express');
 const router = express.Router();
 
+const {jwtAuthMiddleware, generateToken} = require('./../jwt');
+
 const Employee = require('./../Models/employee');
 
-router.post('/', async (req, res) => {
+router.post('/signup', async (req, res) => {
     try {
         const data = req.body;
         const newEmp = new Employee(data);
         const response = await newEmp.save();
         console.log("Data has been saved");
-        res.status(200).json(response);
+
+        // consoling to see the response as well
+        // console.log(JSON.stringify(response));
+
+        // creating a payload object to give to the token generator
+        const payload = {
+            id: response.id,
+            username: response.username
+        }
+
+        const token = generateToken(payload);
+        console.log("Token has been generated");
+        console.log("Token: " + token);
+
+        res.status(200).json({response: response, token: token});
     } catch(err) {
         console.log("error occured: " + err);
         res.status(500).json({"error": "Internal Server Error"});
