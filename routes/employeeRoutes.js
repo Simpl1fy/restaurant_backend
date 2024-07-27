@@ -32,6 +32,41 @@ router.post('/signup', async (req, res) => {
     }
 })
 
+router.post('/login', async (req, res) => {
+    
+    try {
+        const {username, password} = req.body;
+        console.log("Username:" + username);
+        console.log('Password: ' + password);
+        // finding the user in the collection using the usename
+        const user = await Employee.findOne({username: username});
+        // console.log(JSON.stringify(user));
+
+        // checking if the username and password are valid or not
+        if (!user) {
+            return res.status(401).json({"Error": "Invaid Username"});
+        }   
+
+        if(!(await user.comparePassword(password))) {
+            return res.status(401).json({"error": "invalid password"});
+        }
+
+        // payload to generate token
+        const payload = {
+            id: user.id,
+            username: user.username
+        };
+        // if both info valid, then we generate tokens
+        const token = generateToken(payload);
+        console.log("Token has been generated" + token);
+
+        res.status(200).json({user: user, token: token});
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({"error": "internal server error"});
+    }
+})
+
 router.get('/', async (req, res) => {
     try {
         const data = await Employee.find();
