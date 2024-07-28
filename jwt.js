@@ -3,10 +3,14 @@ const jwt = require('jsonwebtoken');
 
 // function to verify jwt token
 const jwtAuthMiddleware = (req, res, next) => {
+
+    // check whether there is a authorization token in header
+    const authorization = req.headers.authorization;
+    if (!authorization) return res.status(401).json({"Error": "No Token Found"});
     
     // extract the json token from the header
-    const token = req.header.authorization.split(' ')[1];
-    if (!token ) return res.status(401).json({"Error": "Token not found"});
+    const token = authorization.split(' ')[1];
+    if (!token ) return res.status(401).json({"Error": "Invalid Token"});
 
     // now verifying the token
     try {

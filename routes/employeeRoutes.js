@@ -67,13 +67,31 @@ router.post('/login', async (req, res) => {
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', jwtAuthMiddleware, async (req, res) => {
     try {
         const data = await Employee.find();
         console.log("Data fetched from the database");
         res.status(200).json(data);
     } catch(err) {
         console.log("error: " + err);
+        res.status(500).json({"error": "Internal Server Error"});
+    }
+})
+
+router.get('/profile', jwtAuthMiddleware, async(req, res) => {
+    try {
+        // getting the user data from the payload which is set by the jwtAuthMiddleware
+        const userData = req.jwtPayload;
+        console.log(userData);
+        
+        // getting the id
+        const userId = userData.id;
+        // finding the user by id
+        const user = await Employee.findById(userId);
+        console.log("User data fetched using token");
+        res.status(200).json(user);
+    } catch(err) {
+        console.log(err);
         res.status(500).json({"error": "Internal Server Error"});
     }
 })
